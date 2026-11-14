@@ -39,6 +39,7 @@ export const ScaleEntryCard: React.FC<ScaleEntryCardProps> = ({
           </label>
           <input
             type="number"
+            inputMode="decimal"
             min="0"
             step="any"
             value={scaleInKg === 0 ? '' : scaleInKg}
@@ -59,6 +60,7 @@ export const ScaleEntryCard: React.FC<ScaleEntryCardProps> = ({
           </label>
           <input
             type="number"
+            inputMode="decimal"
             min="0"
             step="any"
             value={scaleOutKg === 0 ? '' : scaleOutKg}

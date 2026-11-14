@@ -63,7 +63,14 @@ export const TruckInfoForm: React.FC<TruckInfoFormProps> = ({
               type="date"
               value={recordDate}
               onChange={(e) => setRecordDate(e.target.value)}
-              className="w-full pl-10 pr-3.5 py-2 sm:py-2.5 bg-white border border-slate-300 hover:border-slate-400 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/15 rounded-xl text-xs sm:text-sm font-semibold text-slate-900 outline-none transition shadow-2xs"
+              onClick={(e) => {
+                try {
+                  (e.currentTarget as any).showPicker?.();
+                } catch {
+                  // Fallback for older browsers
+                }
+              }}
+              className="w-full pl-10 pr-3.5 py-2 sm:py-2.5 min-h-[42px] bg-white border border-slate-300 hover:border-slate-400 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/15 rounded-xl text-xs sm:text-sm font-semibold text-slate-900 outline-none transition shadow-2xs cursor-pointer"
             />
           </div>
         </div>

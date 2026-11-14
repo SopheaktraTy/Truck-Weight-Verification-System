@@ -20,4 +20,43 @@
     color: #94a3b8 !important; /* slate-400 */
     opacity: 1 !important;
   }
+
+  /* iOS Safari Auto-Zoom Prevention: Ensure inputs have minimum 16px font-size on mobile */
+  @media screen and (max-width: 768px) {
+    input:not([type="checkbox"]):not([type="radio"]),
+    select,
+    textarea {
+      font-size: 16px !important;
+    }
+  }
+
+  /* iOS & Safari Date Input Normalization */
+  input[type="date"] {
+    -webkit-appearance: none;
+    appearance: none;
+    position: relative;
+    min-height: 42px;
+    line-height: normal;
+  }
+
+  input[type="date"]::-webkit-date-and-time-value {
+    text-align: left;
+    min-height: 1.25em;
+    padding: 0;
+  }
+
+  /* Expand native picker indicator across entire input with 0 opacity so tapping anywhere opens datepicker on iOS */
+  input[type="date"]::-webkit-calendar-picker-indicator {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
 }
