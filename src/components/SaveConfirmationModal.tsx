@@ -164,7 +164,7 @@ export const SaveConfirmationModal: React.FC<SaveConfirmationModalProps> = ({
             {/* Scale Net */}
             <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-2xl">
               <span className="text-[11px] font-bold text-slate-500 uppercase block mb-1">
-                {lang === 'km' ? 'ទម្ងន់ជញ្ជីងសុទ្ធ (Scale Net)' : 'Scale Net Weight'}
+                {lang === 'km' ? 'ទម្ងន់ជញ្ជីងសុទ្ធ' : 'Scale Net Weight'}
               </span>
               <div className="text-lg sm:text-xl font-black text-slate-900">
                 {calculationResult.scaleNetKg.toLocaleString(undefined, { minimumFractionDigits: 2 })}{' '}
@@ -178,7 +178,7 @@ export const SaveConfirmationModal: React.FC<SaveConfirmationModalProps> = ({
             {/* Warehouse Total */}
             <div className="p-3.5 bg-blue-50/60 border border-blue-200 rounded-2xl">
               <span className="text-[11px] font-bold text-blue-700 uppercase block mb-1">
-                {lang === 'km' ? 'ទម្ងន់ឃ្លាំងសរុប (Whs Total)' : 'Warehouse Total'}
+                {lang === 'km' ? 'ទម្ងន់ឃ្លាំងសរុប' : 'Warehouse Total'}
               </span>
               <div className="text-lg sm:text-xl font-black text-blue-800">
                 {calculationResult.warehouseTotalKg.toLocaleString(undefined, { minimumFractionDigits: 2 })}{' '}
@@ -193,7 +193,7 @@ export const SaveConfirmationModal: React.FC<SaveConfirmationModalProps> = ({
           {/* Difference & Variance Row */}
           <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-between text-xs sm:text-sm font-bold">
             <span className="text-slate-600">
-              {lang === 'km' ? 'គម្លាតខុសគ្នា (Variance):' : 'Difference & Variance:'}
+              {lang === 'km' ? 'គម្លាតខុសគ្នា:' : 'Difference & Variance:'}
             </span>
             <div className="text-right">
               <span
@@ -250,7 +250,7 @@ export const SaveConfirmationModal: React.FC<SaveConfirmationModalProps> = ({
             disabled={isSaving}
             className="px-4 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-200 rounded-xl transition disabled:opacity-50"
           >
-            {lang === 'km' ? 'កែប្រែឡើងវិញ (Cancel)' : 'Cancel & Edit'}
+            {lang === 'km' ? 'កែប្រែឡើងវិញ' : 'Cancel & Edit'}
           </button>
 
           <button
@@ -271,7 +271,7 @@ export const SaveConfirmationModal: React.FC<SaveConfirmationModalProps> = ({
             <span>
               {isSaving
                 ? lang === 'km' ? 'កំពុងរក្សាទុក...' : 'Saving...'
-                : lang === 'km' ? 'បញ្ជាក់ និងរក្សាទុក (Confirm & Save)' : 'Confirm & Save'}
+                : lang === 'km' ? 'បញ្ជាក់ និងរក្សាទុក' : 'Confirm & Save'}
             </span>
           </button>
         </div>

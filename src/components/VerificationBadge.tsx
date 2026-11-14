@@ -132,7 +132,7 @@ export const VerificationBadge: React.FC<VerificationBadgeProps> = ({
           <span>
             {isSaving
               ? lang === 'km' ? 'កំពុងរក្សាទុក...' : 'Saving...'
-              : lang === 'km' ? 'រក្សាទុកទិន្នន័យ (Save)' : 'Save Record'}
+              : lang === 'km' ? 'រក្សាទុកទិន្នន័យ' : 'Save Record'}
           </span>
         </button>
       </div>
