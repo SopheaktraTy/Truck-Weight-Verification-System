@@ -124,7 +124,11 @@ export const VerificationBadge: React.FC<VerificationBadgeProps> = ({
           disabled={isSaving}
           className="flex-[2] inline-flex items-center justify-center space-x-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-sm shadow-md shadow-blue-500/20 transition disabled:opacity-50"
         >
-          <Save className="w-4 h-4" />
+          {isSaving ? (
+            <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+          ) : (
+            <Save className="w-4 h-4" />
+          )}
           <span>
             {isSaving
               ? lang === 'km' ? 'កំពុងរក្សាទុក...' : 'Saving...'

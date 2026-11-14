@@ -1,5 +1,5 @@
 {
-  "name": "🚨 Workflow 1 - Truck Critical Alert",
+  "name": "🚛 Truck Alert + Telegram Approval Flow",
   "nodes": [
     {
       "parameters": {
@@ -8,24 +8,228 @@
         "responseMode": "onReceived",
         "responseData": "firstEntryJson"
       },
-      "id": "node-webhook",
-      "name": "Supabase Webhook",
+      "id": "node-webhook-alert",
+      "name": "Supabase Webhook (New Record)",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
-      "position": [240, 300],
+      "position": [120, 300],
       "webhookId": "truck-alert"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "assign-record-id",
+              "name": "record_id",
+              "value": "={{ $json.record.id }}",
+              "type": "string"
+            },
+            {
+              "id": "assign-plate",
+              "name": "plate_number",
+              "value": "={{ $json.record.plate_number }}",
+              "type": "string"
+            },
+            {
+              "id": "assign-date",
+              "name": "record_date",
+              "value": "={{ $json.record.record_date }}",
+              "type": "string"
+            },
+            {
+              "id": "assign-operator",
+              "name": "operator_name",
+              "value": "={{ $json.record.operator_name }}",
+              "type": "string"
+            },
+            {
+              "id": "assign-scale",
+              "name": "scale_net_kg",
+              "value": "={{ $json.record.scale_net_kg }}",
+              "type": "number"
+            },
+            {
+              "id": "assign-warehouse",
+              "name": "warehouse_total_kg",
+              "value": "={{ $json.record.warehouse_total_kg }}",
+              "type": "number"
+            },
+            {
+              "id": "assign-diff",
+              "name": "diff_kg",
+              "value": "={{ $json.record.diff_kg }}",
+              "type": "number"
+            },
+            {
+              "id": "assign-diff-pct",
+              "name": "diff_percent",
+              "value": "={{ $json.record.diff_percent }}",
+              "type": "number"
+            },
+            {
+              "id": "assign-status",
+              "name": "status",
+              "value": "={{ $json.record.status }}",
+              "type": "string"
+            },
+            {
+              "id": "assign-company",
+              "name": "company_name",
+              "value": "={{ $json.record.company_name ?? '' }}",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "node-extract",
+      "name": "Extract Record Fields",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [360, 300]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "assign-emoji",
+              "name": "status_emoji",
+              "value": "={{ $json.status === 'ត្រួតពិនិត្យ' ? '🚨' : '✅' }}",
+              "type": "string"
+            },
+            {
+              "id": "assign-title",
+              "name": "status_title",
+              "value": "={{ $json.status === 'ត្រួតពិនិត្យ' ? 'ត្រួតពិនិត្យ — ទម្ងន់មិនត្រូវ!' : 'អនុញ្ញាត — ទម្ងន់ត្រឹមត្រូវ!' }}",
+              "type": "string"
+            },
+            {
+              "id": "assign-warning",
+              "name": "status_note",
+              "value": "={{ $json.status === 'ត្រួតពិនិត្យ' ? '⚠️ *សូមត្រួតពិនិត្យភ្លាមៗ!*' : '✅ *ទម្ងន់ស្ថិតក្នុងដែនកំណត់ ±0.4%*' }}",
+              "type": "string"
+            },
+            {
+              "id": "assign-message",
+              "name": "message",
+              "value": "={{ $json.status_emoji + ' *' + $json.status_title + '*\\n\\n' + '🚛 *ស្លាកលេខ:* `' + $json.plate_number + '`\\n' + '📅 *ថ្ងៃ:* ' + $json.record_date + '\\n' + '👤 *អ្នកប្រតិបត្តិ:* ' + $json.operator_name + '\\n' + ($json.company_name ? '🏢 *ក្រុមហ៊ុន:* ' + $json.company_name + '\\n' : '') + '\\n' + '⚖️ *ជញ្ជីង (NET):* ' + $json.scale_net_kg + ' Kg\\n' + '📦 *ឃ្លាំង (Total):* ' + $json.warehouse_total_kg + ' Kg\\n' + '📊 *ភាពខុសគ្នា:* ' + $json.diff_kg + ' Kg (' + $json.diff_percent + '%)\\n\\n' + $json.status_note + '\\n\\n' + '🆔 *Record ID:* `' + $json.record_id + '`' }}",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "node-format",
+      "name": "Format Message",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [600, 300]
+    },
+    {
+      "parameters": {
+        "chatId": "REPLACE_WITH_YOUR_TELEGRAM_CHAT_ID",
+        "text": "={{ $json.message }}",
+        "additionalFields": {
+          "parse_mode": "Markdown",
+          "reply_markup": "={\"inline_keyboard\":[[{\"text\":\"✅ អនុម័ត (Approve)\",\"callback_data\":\"approve_\" + $json.record_id},{\"text\":\"❌ បដិសេធ (Reject)\",\"callback_data\":\"reject_\" + $json.record_id}]]}"
+        }
+      },
+      "id": "node-telegram-send",
+      "name": "Send Telegram with Buttons",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [840, 300],
+      "credentials": {
+        "telegramApi": {
+          "id": "REPLACE_WITH_YOUR_CREDENTIAL_ID",
+          "name": "Telegram Bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "updates": ["callback_query"],
+        "additionalFields": {}
+      },
+      "id": "node-telegram-trigger",
+      "name": "Telegram Callback Trigger",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.1,
+      "position": [120, 600],
+      "webhookId": "truck-approval-callback",
+      "credentials": {
+        "telegramApi": {
+          "id": "REPLACE_WITH_YOUR_CREDENTIAL_ID",
+          "name": "Telegram Bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "assign-callback-data",
+              "name": "callback_data",
+              "value": "={{ $json.callback_query.data }}",
+              "type": "string"
+            },
+            {
+              "id": "assign-callback-id",
+              "name": "callback_query_id",
+              "value": "={{ $json.callback_query.id }}",
+              "type": "string"
+            },
+            {
+              "id": "assign-callback-chat",
+              "name": "chat_id",
+              "value": "={{ $json.callback_query.message.chat.id }}",
+              "type": "string"
+            },
+            {
+              "id": "assign-callback-msg",
+              "name": "message_id",
+              "value": "={{ $json.callback_query.message.message_id }}",
+              "type": "string"
+            },
+            {
+              "id": "assign-action",
+              "name": "action",
+              "value": "={{ $json.callback_query.data.startsWith('approve_') ? 'approve' : 'reject' }}",
+              "type": "string"
+            },
+            {
+              "id": "assign-rec-id",
+              "name": "record_id",
+              "value": "={{ $json.callback_query.data.replace('approve_', '').replace('reject_', '') }}",
+              "type": "string"
+            },
+            {
+              "id": "assign-approver",
+              "name": "approver",
+              "value": "={{ ($json.callback_query.from.first_name ?? '') + ' ' + ($json.callback_query.from.last_name ?? '') }}",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "id": "node-parse-callback",
+      "name": "Parse Callback Data",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [360, 600]
     },
     {
       "parameters": {
         "conditions": {
           "options": {
-            "caseSensitive": true
+            "caseSensitive": false
           },
           "conditions": [
             {
-              "id": "cond-status",
-              "leftValue": "={{ $json.record.status }}",
-              "rightValue": "ត្រួតពិនិត្យ",
+              "id": "cond-approve",
+              "leftValue": "={{ $json.action }}",
+              "rightValue": "approve",
               "operator": {
                 "type": "string",
                 "operation": "equals"
@@ -35,44 +239,99 @@
           "combinator": "and"
         }
       },
-      "id": "node-if",
-      "name": "Is Inspect Status?",
+      "id": "node-if-action",
+      "name": "Approve or Reject?",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
-      "position": [480, 300]
+      "position": [600, 600]
     },
     {
       "parameters": {
-        "assignments": {
-          "assignments": [
+        "method": "PATCH",
+        "url": "=https://tdrohatnwtgkvpkdbdoj.supabase.co/rest/v1/truck_records?id=eq.{{ $json.record_id }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
             {
-              "id": "msg-field",
-              "name": "message",
-              "value": "=🚨 *ត្រួតពិនិត្យ — ទម្ងន់មិនត្រូវ!*\n\n🚛 *ឡាន:* `{{ $('Supabase Webhook').item.json.record.plate_number }}`\n📅 *ថ្ងៃ:* {{ $('Supabase Webhook').item.json.record.record_date }}\n👤 *អ្នកប្រតិបត្តិ:* {{ $('Supabase Webhook').item.json.record.operator_name }}\n\n⚖️ *ជញ្ជីង (NET):* {{ $('Supabase Webhook').item.json.record.scale_net_kg }} Kg\n📦 *ឃ្លាំង (Total):* {{ $('Supabase Webhook').item.json.record.warehouse_total_kg }} Kg\n📊 *ភាពខុសគ្នា:* {{ $('Supabase Webhook').item.json.record.diff_kg }} Kg ({{ $('Supabase Webhook').item.json.record.diff_percent }}%)\n\n⚠️ *សូមត្រួតពិនិត្យភ្លាមៗ!*",
-              "type": "string"
+              "name": "apikey",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRkcm9oYXRud3Rna3Zwa2RiZG9qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQzMDE2ODcsImV4cCI6MjEwOTg3NzY4N30.QjixEFlen6ICeq8_TWD3475wlU-gZVoeGPMFPoeY9U4"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRkcm9oYXRud3Rna3Zwa2RiZG9qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQzMDE2ODcsImV4cCI6MjEwOTg3NzY4N30.QjixEFlen6ICeq8_TWD3475wlU-gZVoeGPMFPoeY9U4"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=representation"
             }
           ]
-        }
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\"approval_status\": \"approved\", \"approved_at\": \"{{ new Date().toISOString() }}\", \"approved_by\": \"{{ $json.approver }}\"}"
       },
-      "id": "node-format",
-      "name": "Format Alert Message",
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.4,
-      "position": [720, 200]
+      "id": "node-supabase-approve",
+      "name": "Supabase: Set Approved",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [840, 480]
     },
     {
       "parameters": {
-        "chatId": "REPLACE_WITH_YOUR_TELEGRAM_CHAT_ID",
-        "text": "={{ $json.message }}",
-        "additionalFields": {
-          "parse_mode": "Markdown"
-        }
+        "method": "PATCH",
+        "url": "=https://tdrohatnwtgkvpkdbdoj.supabase.co/rest/v1/truck_records?id=eq.{{ $json.record_id }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRkcm9oYXRud3Rna3Zwa2RiZG9qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQzMDE2ODcsImV4cCI6MjEwOTg3NzY4N30.QjixEFlen6ICeq8_TWD3475wlU-gZVoeGPMFPoeY9U4"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRkcm9oYXRud3Rna3Zwa2RiZG9qIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQzMDE2ODcsImV4cCI6MjEwOTg3NzY4N30.QjixEFlen6ICeq8_TWD3475wlU-gZVoeGPMFPoeY9U4"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=representation"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\"approval_status\": \"rejected\", \"approved_at\": \"{{ new Date().toISOString() }}\", \"approved_by\": \"{{ $json.approver }}\"}"
       },
-      "id": "node-telegram",
-      "name": "Send Telegram Alert",
-      "type": "n8n-nodes-base.telegram",
-      "typeVersion": 1.2,
-      "position": [960, 200],
+      "id": "node-supabase-reject",
+      "name": "Supabase: Set Rejected",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [840, 720]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://api.telegram.org/bot{{ $credentials.token }}/answerCallbackQuery",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\"callback_query_id\": \"{{ $('Parse Callback Data').item.json.callback_query_id }}\", \"text\": \"{{ $('Approve or Reject?').item.json.action === 'approve' ? '✅ បានអនុម័ត!' : '❌ បានបដិសេធ!' }}\", \"show_alert\": false}"
+      },
+      "id": "node-answer-callback",
+      "name": "Answer Callback Query",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1080, 600],
       "credentials": {
         "telegramApi": {
           "id": "REPLACE_WITH_YOUR_CREDENTIAL_ID",
@@ -81,29 +340,71 @@
       }
     },
     {
-      "parameters": {},
-      "id": "node-noop",
-      "name": "Approved — No Action",
-      "type": "n8n-nodes-base.noOp",
-      "typeVersion": 1,
-      "position": [720, 440]
+      "parameters": {
+        "chatId": "={{ $('Parse Callback Data').item.json.chat_id }}",
+        "text": "={{ $('Approve or Reject?').item.json.action === 'approve' ? '✅ *បានអនុម័ត (Approved)*\\n\\nកំណត់ត្រាត្រូវបានអនុម័ត ដោយ ' + $('Parse Callback Data').item.json.approver + '\\n🆔 ID: `' + $('Parse Callback Data').item.json.record_id + '`' : '❌ *បានបដិសេធ (Rejected)*\\n\\nកំណត់ត្រាត្រូវបានបដិសេធ ដោយ ' + $('Parse Callback Data').item.json.approver + '\\n🆔 ID: `' + $('Parse Callback Data').item.json.record_id + '`' }}",
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
+      },
+      "id": "node-telegram-confirm",
+      "name": "Send Confirmation Message",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [1080, 760],
+      "credentials": {
+        "telegramApi": {
+          "id": "REPLACE_WITH_YOUR_CREDENTIAL_ID",
+          "name": "Telegram Bot"
+        }
+      }
     }
   ],
   "connections": {
-    "Supabase Webhook": {
+    "Supabase Webhook (New Record)": {
       "main": [
-        [{ "node": "Is Inspect Status?", "type": "main", "index": 0 }]
+        [{ "node": "Extract Record Fields", "type": "main", "index": 0 }]
       ]
     },
-    "Is Inspect Status?": {
+    "Extract Record Fields": {
       "main": [
-        [{ "node": "Format Alert Message", "type": "main", "index": 0 }],
-        [{ "node": "Approved — No Action", "type": "main", "index": 0 }]
+        [{ "node": "Format Message", "type": "main", "index": 0 }]
       ]
     },
-    "Format Alert Message": {
+    "Format Message": {
       "main": [
-        [{ "node": "Send Telegram Alert", "type": "main", "index": 0 }]
+        [{ "node": "Send Telegram with Buttons", "type": "main", "index": 0 }]
+      ]
+    },
+    "Telegram Callback Trigger": {
+      "main": [
+        [{ "node": "Parse Callback Data", "type": "main", "index": 0 }]
+      ]
+    },
+    "Parse Callback Data": {
+      "main": [
+        [{ "node": "Approve or Reject?", "type": "main", "index": 0 }]
+      ]
+    },
+    "Approve or Reject?": {
+      "main": [
+        [{ "node": "Supabase: Set Approved", "type": "main", "index": 0 }],
+        [{ "node": "Supabase: Set Rejected", "type": "main", "index": 0 }]
+      ]
+    },
+    "Supabase: Set Approved": {
+      "main": [
+        [{ "node": "Answer Callback Query", "type": "main", "index": 0 }]
+      ]
+    },
+    "Supabase: Set Rejected": {
+      "main": [
+        [{ "node": "Answer Callback Query", "type": "main", "index": 0 }]
+      ]
+    },
+    "Answer Callback Query": {
+      "main": [
+        [{ "node": "Send Confirmation Message", "type": "main", "index": 0 }]
       ]
     }
   },
@@ -112,7 +413,7 @@
   },
   "staticData": null,
   "meta": {
-    "templateId": "truck-alert-v1"
+    "templateId": "truck-alert-approval-v2"
   },
   "tags": []
 }

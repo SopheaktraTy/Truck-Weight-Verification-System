@@ -3,7 +3,21 @@
 @tailwind utilities;
 
 @layer base {
-  body {
+  html, body {
+    font-family: 'Kantumruy Pro', 'Inter', 'Noto Sans Khmer', 'Battambang', system-ui, sans-serif;
     @apply bg-slate-100 text-slate-800;
+  }
+
+  input, select, textarea, button {
+    font-family: inherit;
+  }
+
+  /* Universal Placeholder Convention: crisp, regular weight, never bold */
+  ::placeholder,
+  input::placeholder,
+  textarea::placeholder {
+    font-weight: 400 !important;
+    color: #94a3b8 !important; /* slate-400 */
+    opacity: 1 !important;
   }
 }

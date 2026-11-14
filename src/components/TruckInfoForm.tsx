@@ -29,14 +29,14 @@ export const TruckInfoForm: React.FC<TruckInfoFormProps> = ({
         </h2>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
         {/* Truck Plate */}
         <div>
-          <label className="block text-xs font-semibold text-slate-600 uppercase mb-1.5">
-            {lang === 'km' ? 'ផ្លាកលេខឡាន' : 'Truck Plate Number'} *
+          <label className="block text-xs font-semibold text-slate-600 mb-1.5">
+            {lang === 'km' ? 'ផ្លាកលេខឡាន' : 'Truck Plate Number'} <span className="text-rose-500">*</span>
           </label>
           <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
               <Truck className="w-4 h-4" />
             </div>
             <input
@@ -45,36 +45,36 @@ export const TruckInfoForm: React.FC<TruckInfoFormProps> = ({
               value={plateNumber}
               onChange={(e) => setPlateNumber(e.target.value.toUpperCase())}
               placeholder="e.g. 3G-2487"
-              className="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 font-semibold focus:ring-2 focus:ring-blue-500 focus:bg-white transition"
+              className="w-full pl-10 pr-3.5 py-2 sm:py-2.5 bg-white border border-slate-300 hover:border-slate-400 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/15 rounded-xl text-xs sm:text-sm font-semibold text-slate-900 outline-none transition shadow-2xs placeholder:text-slate-400 placeholder:font-normal"
             />
           </div>
         </div>
 
         {/* Date */}
         <div>
-          <label className="block text-xs font-semibold text-slate-600 uppercase mb-1.5">
+          <label className="block text-xs font-semibold text-slate-600 mb-1.5">
             {lang === 'km' ? 'ថ្ងៃ/ខែ/ឆ្នាំ' : 'Date'}
           </label>
           <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
               <Calendar className="w-4 h-4" />
             </div>
             <input
               type="date"
               value={recordDate}
               onChange={(e) => setRecordDate(e.target.value)}
-              className="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 font-medium focus:ring-2 focus:ring-blue-500 focus:bg-white transition"
+              className="w-full pl-10 pr-3.5 py-2 sm:py-2.5 bg-white border border-slate-300 hover:border-slate-400 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/15 rounded-xl text-xs sm:text-sm font-semibold text-slate-900 outline-none transition shadow-2xs"
             />
           </div>
         </div>
 
         {/* Operator Name */}
         <div>
-          <label className="block text-xs font-semibold text-slate-600 uppercase mb-1.5">
+          <label className="block text-xs font-semibold text-slate-600 mb-1.5">
             {lang === 'km' ? 'បុគ្គលិកថ្លឹងជញ្ជីង' : 'Scale Operator'}
           </label>
           <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
               <User className="w-4 h-4" />
             </div>
             <input
@@ -82,7 +82,7 @@ export const TruckInfoForm: React.FC<TruckInfoFormProps> = ({
               value={operatorName}
               onChange={(e) => setOperatorName(e.target.value)}
               placeholder="e.g. Sopheaktra"
-              className="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-slate-900 font-medium focus:ring-2 focus:ring-blue-500 focus:bg-white transition"
+              className="w-full pl-10 pr-3.5 py-2 sm:py-2.5 bg-white border border-slate-300 hover:border-slate-400 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/15 rounded-xl text-xs sm:text-sm font-semibold text-slate-900 outline-none transition shadow-2xs placeholder:text-slate-400 placeholder:font-normal"
             />
           </div>
         </div>

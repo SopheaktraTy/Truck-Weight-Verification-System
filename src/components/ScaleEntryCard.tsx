@@ -30,7 +30,7 @@ export const ScaleEntryCard: React.FC<ScaleEntryCardProps> = ({
       <div className="space-y-4">
         {/* Scale In (Tare / Inbound) */}
         <div>
-          <label className="flex items-center justify-between text-xs font-semibold text-slate-600 uppercase mb-1.5">
+          <label className="flex items-center justify-between text-xs font-semibold text-slate-600 mb-1.5">
             <span className="flex items-center space-x-1.5">
               <ArrowDownRight className="w-4 h-4 text-emerald-600" />
               <span>{lang === 'km' ? 'ទម្ងន់ឡាន (ចូល)' : 'Scale Inbound (Tare)'}</span>
@@ -44,13 +44,13 @@ export const ScaleEntryCard: React.FC<ScaleEntryCardProps> = ({
             value={scaleInKg === 0 ? '' : scaleInKg}
             onChange={(e) => setScaleInKg(parseFloat(e.target.value) || 0)}
             placeholder="0"
-            className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl font-bold text-lg text-slate-900 focus:ring-2 focus:ring-blue-500 focus:bg-white transition"
+            className="w-full px-3.5 py-2 sm:py-2.5 bg-white border border-slate-300 hover:border-slate-400 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/15 rounded-xl font-bold text-base sm:text-lg text-slate-900 outline-none transition shadow-2xs placeholder:text-slate-400 placeholder:font-normal"
           />
         </div>
 
         {/* Scale Out (Gross / Outbound) */}
         <div>
-          <label className="flex items-center justify-between text-xs font-semibold text-slate-600 uppercase mb-1.5">
+          <label className="flex items-center justify-between text-xs font-semibold text-slate-600 mb-1.5">
             <span className="flex items-center space-x-1.5">
               <ArrowUpRight className="w-4 h-4 text-blue-600" />
               <span>{lang === 'km' ? 'ទម្ងន់ឡាន (ចេញ)' : 'Scale Outbound (Gross)'}</span>
@@ -64,7 +64,7 @@ export const ScaleEntryCard: React.FC<ScaleEntryCardProps> = ({
             value={scaleOutKg === 0 ? '' : scaleOutKg}
             onChange={(e) => setScaleOutKg(parseFloat(e.target.value) || 0)}
             placeholder="0"
-            className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl font-bold text-lg text-slate-900 focus:ring-2 focus:ring-blue-500 focus:bg-white transition"
+            className="w-full px-3.5 py-2 sm:py-2.5 bg-white border border-slate-300 hover:border-slate-400 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/15 rounded-xl font-bold text-base sm:text-lg text-slate-900 outline-none transition shadow-2xs placeholder:text-slate-400 placeholder:font-normal"
           />
         </div>
 

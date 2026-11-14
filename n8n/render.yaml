@@ -1,0 +1,57 @@
+# render.yaml — n8n on Render with Supabase PostgreSQL DB
+# Workflows stored in Supabase = NEVER wiped on restart
+
+services:
+  - type: web
+    name: truck-n8n
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    region: singapore
+
+    envVars:
+      # ── Supabase PostgreSQL DB (workflows stored here, never lost) ──
+      - key: DB_TYPE
+        value: postgresdb
+      - key: DB_POSTGRESDB_HOST
+        value: db.tdrohatnwtgkvpkdbdoj.supabase.co
+      - key: DB_POSTGRESDB_PORT
+        value: "5432"
+      - key: DB_POSTGRESDB_DATABASE
+        value: postgres
+      - key: DB_POSTGRESDB_USER
+        value: postgres
+      - key: DB_POSTGRESDB_PASSWORD
+        sync: false   # Set this manually in Render dashboard (secret)
+      - key: DB_POSTGRESDB_SCHEMA
+        value: n8n
+
+      # ── n8n App Config ──
+      - key: N8N_PORT
+        value: "10000"
+      - key: N8N_PROTOCOL
+        value: https
+      - key: N8N_HOST
+        value: truck-n8n.onrender.com
+      - key: WEBHOOK_URL
+        value: https://truck-n8n.onrender.com/
+      - key: N8N_EDITOR_BASE_URL
+        value: https://truck-n8n.onrender.com/
+      - key: GENERIC_TIMEZONE
+        value: Asia/Phnom_Penh
+      - key: TZ
+        value: Asia/Phnom_Penh
+      - key: N8N_ENCRYPTION_KEY
+        value: truck-weight-secret-2024-kh
+      - key: N8N_BASIC_AUTH_ACTIVE
+        value: "true"
+      - key: N8N_BASIC_AUTH_USER
+        value: admin
+      - key: N8N_BASIC_AUTH_PASSWORD
+        sync: false   # Set this manually in Render dashboard (secret)
+      - key: EXECUTIONS_DATA_PRUNE
+        value: "true"
+      - key: EXECUTIONS_DATA_MAX_AGE
+        value: "168"
+      - key: N8N_LOG_LEVEL
+        value: info

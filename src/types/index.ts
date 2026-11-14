@@ -37,6 +37,8 @@ export interface TruckRecord {
   plate_number: string;
   company_id: string;
   company_code?: string;
+  company_name?: string;
+  company_logo?: string;
   record_date: string;
   scale_in_kg: number;
   scale_out_kg: number;
