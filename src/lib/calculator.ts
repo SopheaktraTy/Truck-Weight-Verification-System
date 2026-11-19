@@ -124,3 +124,66 @@ export function verifyTruckWeight(
     statusMessage,
   };
 }
+
+/**
+ * Formats a record's date and time onto a single human-readable line without icons.
+ * Example: "19 Nov 2026 : 10:25 AM" or "10 Jun 2020 : 11:10 AM"
+ */
+export function formatRecordDateTime(
+  dateStr?: string,
+  timeStr?: string,
+  createdAt?: string
+): string {
+  let year = '';
+  let month = '';
+  let day = '';
+  let hours = 0;
+  let minutes = 0;
+  let hasTime = false;
+
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+  if (dateStr && dateStr.includes('-')) {
+    const parts = dateStr.split('-');
+    year = parts[0];
+    const mIndex = parseInt(parts[1], 10) - 1;
+    month = months[mIndex] || parts[1];
+    day = String(parseInt(parts[2], 10) || parts[2]);
+  } else if (createdAt) {
+    const d = new Date(createdAt);
+    if (!isNaN(d.getTime())) {
+      year = String(d.getFullYear());
+      month = months[d.getMonth()];
+      day = String(d.getDate());
+      hours = d.getHours();
+      minutes = d.getMinutes();
+      hasTime = true;
+    }
+  }
+
+  if (timeStr && timeStr.includes(':')) {
+    const tParts = timeStr.split(':');
+    hours = parseInt(tParts[0], 10) || 0;
+    minutes = parseInt(tParts[1], 10) || 0;
+    hasTime = true;
+  } else if (!hasTime && createdAt) {
+    const d = new Date(createdAt);
+    if (!isNaN(d.getTime())) {
+      hours = d.getHours();
+      minutes = d.getMinutes();
+      hasTime = true;
+    }
+  }
+
+  const dateFormatted = day && month && year ? `${day} ${month} ${year}` : (dateStr || '');
+
+  if (hasTime) {
+    const period = hours >= 12 ? 'PM' : 'AM';
+    const displayHours = hours % 12 === 0 ? 12 : hours % 12;
+    const displayMinutes = String(minutes).padStart(2, '0');
+    const timeFormatted = `${displayHours}:${displayMinutes} ${period}`;
+    return dateFormatted ? `${dateFormatted} : ${timeFormatted}` : timeFormatted;
+  }
+
+  return dateFormatted || 'N/A';
+}

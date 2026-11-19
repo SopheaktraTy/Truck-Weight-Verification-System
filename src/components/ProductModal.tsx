@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Product, Company } from '../types';
 import { uploadImage, deleteImage } from '../lib/storage';
-import { X, Upload, Package, Image as ImageIcon, Loader2 } from 'lucide-react';
+import { X, Upload, Package, Image as ImageIcon, Loader2, Trash2 } from 'lucide-react';
 import { CustomSelect, SelectOption } from './CustomSelect';
 
 interface ProductModalProps {
@@ -103,10 +103,10 @@ export const ProductModal: React.FC<ProductModalProps> = ({
 
     try {
       setIsSubmitting(true);
-      const cleanImage = imageUrl && !imageUrl.startsWith('blob:') ? imageUrl : (initialProduct?.image_url || '');
+      const cleanImage = imageUrl && !imageUrl.startsWith('blob:') ? imageUrl : '';
 
-      // If replacing an existing image with a new one, delete the old image from Supabase storage
-      if (initialProduct?.image_url && cleanImage && cleanImage !== initialProduct.image_url) {
+      // If replacing or removing an existing image, delete the old image from Supabase storage
+      if (initialProduct?.image_url && cleanImage !== initialProduct.image_url) {
         deleteImage(initialProduct.image_url);
       }
 
@@ -191,15 +191,39 @@ export const ProductModal: React.FC<ProductModalProps> = ({
                   accept="image/png, image/jpeg, image/webp"
                   className="hidden"
                 />
-                <button
-                  type="button"
-                  onClick={() => fileInputRef.current?.click()}
-                  disabled={isUploading}
-                  className="inline-flex items-center space-x-1.5 px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition border border-slate-300"
-                >
-                  <Upload className="w-3.5 h-3.5" />
-                  <span>{lang === 'km' ? 'ជ្រើសរើសរូបភាព...' : 'Upload Image...'}</span>
-                </button>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={isUploading}
+                    className="inline-flex items-center space-x-1.5 px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition border border-slate-300"
+                  >
+                    <Upload className="w-3.5 h-3.5" />
+                    <span>{lang === 'km' ? 'ជ្រើសរើសរូបភាព...' : 'Upload Image...'}</span>
+                  </button>
+
+                  {(previewUrl || imageUrl) && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (imageUrl && imageUrl !== initialProduct?.image_url) {
+                          deleteImage(imageUrl);
+                        }
+                        setImageUrl('');
+                        setPreviewUrl('');
+                        if (fileInputRef.current) {
+                          fileInputRef.current.value = '';
+                        }
+                      }}
+                      disabled={isUploading}
+                      className="inline-flex items-center space-x-1.5 px-2.5 py-2 bg-rose-50 hover:bg-rose-100 text-rose-600 text-xs font-bold rounded-xl transition border border-rose-200"
+                      title={lang === 'km' ? 'លុបរូបភាពចេញ' : 'Remove image'}
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                      <span>{lang === 'km' ? 'លុបរូបភាព' : 'Remove'}</span>
+                    </button>
+                  )}
+                </div>
                 <p className="text-[11px] text-slate-400 mt-1">
                   Photos of beverage can or pallet. Max 5MB.
                 </p>
@@ -218,8 +242,13 @@ export const ProductModal: React.FC<ProductModalProps> = ({
                 required
                 value={nameKh}
                 onChange={(e) => setNameKh(e.target.value)}
-                placeholder="e.g. គីងកុង, រេម"
-                className="w-full px-3.5 py-2 sm:py-2.5 bg-white border border-slate-300 hover:border-slate-400 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/15 rounded-xl text-slate-900 font-medium text-xs sm:text-sm outline-none transition placeholder:text-slate-400 placeholder:font-normal"
+                placeholder={lang === 'km' ? 'ឧ. គីងកុង, រេម' : 'e.g. King Kong, RAM'}
+                className={`w-full px-3.5 py-2 sm:py-2.5 border rounded-xl text-xs sm:text-sm outline-none transition
+                  ${nameKh
+                    ? 'bg-white border-blue-500 font-bold text-slate-900'
+                    : 'bg-slate-50/70 border-slate-300 text-slate-900 placeholder:text-slate-400 placeholder:italic'
+                  }
+                  focus:border-blue-600 focus:ring-2 focus:ring-blue-500/15 focus:bg-white`}
               />
             </div>
 
@@ -232,8 +261,13 @@ export const ProductModal: React.FC<ProductModalProps> = ({
                 required
                 value={nameEn}
                 onChange={(e) => setNameEn(e.target.value)}
-                placeholder="e.g. King Kong, RAM"
-                className="w-full px-3.5 py-2 sm:py-2.5 bg-white border border-slate-300 hover:border-slate-400 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/15 rounded-xl text-slate-900 font-medium text-xs sm:text-sm outline-none transition placeholder:text-slate-400 placeholder:font-normal"
+                placeholder={lang === 'km' ? 'ឧ. King Kong, RAM' : 'e.g. King Kong, RAM'}
+                className={`w-full px-3.5 py-2 sm:py-2.5 border rounded-xl text-xs sm:text-sm outline-none transition
+                  ${nameEn
+                    ? 'bg-white border-blue-500 font-bold text-slate-900'
+                    : 'bg-slate-50/70 border-slate-300 text-slate-900 placeholder:text-slate-400 placeholder:italic'
+                  }
+                  focus:border-blue-600 focus:ring-2 focus:ring-blue-500/15 focus:bg-white`}
               />
             </div>
           </div>
@@ -250,7 +284,12 @@ export const ProductModal: React.FC<ProductModalProps> = ({
                 value={packagingSpec}
                 onChange={(e) => setPackagingSpec(e.target.value)}
                 placeholder="e.g. Sleek 250ml x 24 Can"
-                className="w-full px-3.5 py-2 sm:py-2.5 bg-white border border-slate-300 hover:border-slate-400 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/15 rounded-xl text-slate-900 font-medium text-xs sm:text-sm outline-none transition placeholder:text-slate-400 placeholder:font-normal"
+                className={`w-full px-3.5 py-2 sm:py-2.5 border rounded-xl text-xs sm:text-sm outline-none transition
+                  ${packagingSpec
+                    ? 'bg-white border-blue-500 font-bold text-slate-900'
+                    : 'bg-slate-50/70 border-slate-300 text-slate-900 placeholder:text-slate-400 placeholder:italic'
+                  }
+                  focus:border-blue-600 focus:ring-2 focus:ring-blue-500/15 focus:bg-white`}
               />
             </div>
 
@@ -286,7 +325,12 @@ export const ProductModal: React.FC<ProductModalProps> = ({
                 value={unitWeightKg}
                 onChange={(e) => setUnitWeightKg(e.target.value === '' ? '' : parseFloat(e.target.value))}
                 placeholder="e.g. 6.65, 19.7"
-                className="w-full pl-3.5 pr-12 py-2 sm:py-2.5 bg-white border border-slate-300 hover:border-slate-400 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/15 rounded-xl text-slate-900 font-semibold text-xs sm:text-sm outline-none transition placeholder:text-slate-400 placeholder:font-normal"
+                className={`w-full pl-3.5 pr-12 py-2 sm:py-2.5 border rounded-xl text-xs sm:text-sm outline-none transition
+                  ${unitWeightKg !== ''
+                    ? 'bg-white border-blue-500 font-bold text-slate-900'
+                    : 'bg-slate-50/70 border-slate-300 text-slate-900 placeholder:text-slate-400 placeholder:italic'
+                  }
+                  focus:border-blue-600 focus:ring-2 focus:ring-blue-500/15 focus:bg-white`}
               />
               <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">
                 Kg

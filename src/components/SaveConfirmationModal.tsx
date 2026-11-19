@@ -23,6 +23,7 @@ interface SaveConfirmationModalProps {
   plateNumber: string;
   company: Company | undefined;
   recordDate: string;
+  recordTime?: string;
   operatorName: string;
   scaleInKg: number;
   scaleOutKg: number;
@@ -39,6 +40,7 @@ export const SaveConfirmationModal: React.FC<SaveConfirmationModalProps> = ({
   plateNumber,
   company,
   recordDate,
+  recordTime,
   operatorName,
   scaleInKg,
   scaleOutKg,
@@ -150,7 +152,7 @@ export const SaveConfirmationModal: React.FC<SaveConfirmationModalProps> = ({
             <div className="grid grid-cols-2 gap-2 text-xs text-slate-600">
               <div className="flex items-center space-x-1.5">
                 <Calendar className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                <span>{recordDate}</span>
+                <span className="font-medium text-slate-800">{recordDate}{recordTime ? ` ${recordTime}` : ''}</span>
               </div>
               <div className="flex items-center space-x-1.5 justify-end">
                 <User className="w-3.5 h-3.5 text-slate-400 shrink-0" />

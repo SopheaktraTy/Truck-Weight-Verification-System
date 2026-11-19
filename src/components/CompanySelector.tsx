@@ -1,6 +1,6 @@
 import React from 'react';
 import { Company } from '../types';
-import { Building2, Check, Plus, Edit2 } from 'lucide-react';
+import { Building2, Check, Plus, Edit2, Trash2 } from 'lucide-react';
 
 interface CompanySelectorProps {
   companies: Company[];
@@ -8,6 +8,8 @@ interface CompanySelectorProps {
   onSelectCompany: (companyId: string) => void;
   onAddCompany: () => void;
   onEditCompany: (company: Company) => void;
+  onDeleteCompany?: (companyId: string) => void;
+  isAdmin?: boolean;
   lang: 'km' | 'en';
 }
 
@@ -17,6 +19,8 @@ export const CompanySelector: React.FC<CompanySelectorProps> = ({
   onSelectCompany,
   onAddCompany,
   onEditCompany,
+  onDeleteCompany,
+  isAdmin = false,
   lang,
 }) => {
   return (
@@ -29,16 +33,18 @@ export const CompanySelector: React.FC<CompanySelectorProps> = ({
           </h2>
         </div>
 
-        {/* Add Company Button */}
-        <button
-          type="button"
-          onClick={onAddCompany}
-          className="inline-flex items-center space-x-1 px-2.5 py-1 text-xs font-bold text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-lg transition"
-          title={lang === 'km' ? 'បន្ថែមក្រុមហ៊ុនថ្មី' : 'Add New Company'}
-        >
-          <Plus className="w-3.5 h-3.5 stroke-[3]" />
-          <span>{lang === 'km' ? 'បន្ថែមក្រុមហ៊ុន' : 'Add Company'}</span>
-        </button>
+        {/* Add Company Button: Only visible to logged-in Admin */}
+        {isAdmin && (
+          <button
+            type="button"
+            onClick={onAddCompany}
+            className="inline-flex items-center space-x-1 px-2.5 py-1 text-xs font-bold text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-lg transition"
+            title={lang === 'km' ? 'បន្ថែមក្រុមហ៊ុនថ្មី' : 'Add New Company'}
+          >
+            <Plus className="w-3.5 h-3.5 stroke-[3]" />
+            <span>{lang === 'km' ? 'បន្ថែមក្រុមហ៊ុន' : 'Add Company'}</span>
+          </button>
+        )}
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
@@ -80,19 +86,42 @@ export const CompanySelector: React.FC<CompanySelectorProps> = ({
                 </p>
               </div>
 
-              <div className="flex items-center space-x-1.5 shrink-0">
-                {/* Edit Company Button */}
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onEditCompany(c);
-                  }}
-                  className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-100/60 rounded-lg transition"
-                  title={lang === 'km' ? 'កែសម្រួលក្រុមហ៊ុន' : 'Edit Company'}
-                >
-                  <Edit2 className="w-4 h-4" />
-                </button>
+              <div className="flex items-center space-x-1 shrink-0">
+                {/* Admin Actions: Edit and Delete */}
+                {isAdmin && (
+                  <>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onEditCompany(c);
+                      }}
+                      className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-100/60 rounded-lg transition"
+                      title={lang === 'km' ? 'កែសម្រួលក្រុមហ៊ុន' : 'Edit Company'}
+                    >
+                      <Edit2 className="w-4 h-4" />
+                    </button>
+
+                    {companies.length > 1 && onDeleteCompany && (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          const ok = window.confirm(
+                            lang === 'km'
+                              ? `តើអ្នកប្រាកដជាចង់លុបក្រុមហ៊ុន "${c.name}" (${c.code})?`
+                              : `Are you sure you want to delete company "${c.name}" (${c.code})?`
+                          );
+                          if (ok) onDeleteCompany(c.id);
+                        }}
+                        className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition"
+                        title={lang === 'km' ? 'លុបក្រុមហ៊ុន' : 'Delete Company'}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    )}
+                  </>
+                )}
 
                 {isSelected && (
                   <div className="w-5 h-5 rounded-full bg-blue-600 text-white flex items-center justify-center">

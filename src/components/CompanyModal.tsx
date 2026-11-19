@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Company } from '../types';
 import { uploadImage, deleteImage } from '../lib/storage';
-import { X, Upload, Building2, Image as ImageIcon, Loader2 } from 'lucide-react';
+import { X, Upload, Building2, Image as ImageIcon, Loader2, Trash2 } from 'lucide-react';
 
 interface CompanyModalProps {
   isOpen: boolean;
@@ -94,10 +94,10 @@ export const CompanyModal: React.FC<CompanyModalProps> = ({
 
     try {
       setIsSubmitting(true);
-      const cleanLogo = logoUrl && !logoUrl.startsWith('blob:') ? logoUrl : (initialCompany?.logo_url || '');
+      const cleanLogo = logoUrl && !logoUrl.startsWith('blob:') ? logoUrl : '';
 
-      // If replacing an existing image with a new one, delete the old image from Supabase storage
-      if (initialCompany?.logo_url && cleanLogo && cleanLogo !== initialCompany.logo_url) {
+      // If replacing or removing an existing image, delete the old image from Supabase storage
+      if (initialCompany?.logo_url && initialCompany.logo_url !== cleanLogo) {
         deleteImage(initialCompany.logo_url);
       }
 
@@ -173,15 +173,39 @@ export const CompanyModal: React.FC<CompanyModalProps> = ({
                   accept="image/png, image/jpeg, image/webp, image/svg+xml"
                   className="hidden"
                 />
-                <button
-                  type="button"
-                  onClick={() => fileInputRef.current?.click()}
-                  disabled={isUploading}
-                  className="inline-flex items-center space-x-1.5 px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition border border-slate-300"
-                >
-                  <Upload className="w-3.5 h-3.5" />
-                  <span>{lang === 'km' ? 'ជ្រើសរើសរូបភាព...' : 'Upload Logo...'}</span>
-                </button>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={isUploading}
+                    className="inline-flex items-center space-x-1.5 px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition border border-slate-300"
+                  >
+                    <Upload className="w-3.5 h-3.5" />
+                    <span>{lang === 'km' ? 'ជ្រើសរើសរូបភាព...' : 'Upload Logo...'}</span>
+                  </button>
+
+                  {(previewUrl || logoUrl) && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (logoUrl && logoUrl !== initialCompany?.logo_url) {
+                          deleteImage(logoUrl);
+                        }
+                        setLogoUrl('');
+                        setPreviewUrl('');
+                        if (fileInputRef.current) {
+                          fileInputRef.current.value = '';
+                        }
+                      }}
+                      disabled={isUploading}
+                      className="inline-flex items-center space-x-1.5 px-2.5 py-2 bg-rose-50 hover:bg-rose-100 text-rose-600 text-xs font-bold rounded-xl transition border border-rose-200"
+                      title={lang === 'km' ? 'លុបរូបភាពចេញ' : 'Remove image'}
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                      <span>{lang === 'km' ? 'លុបរូបភាព' : 'Remove'}</span>
+                    </button>
+                  )}
+                </div>
                 <p className="text-[11px] text-slate-400 mt-1">
                   PNG, JPG, or WebP. Max 5MB.
                 </p>
@@ -199,8 +223,13 @@ export const CompanyModal: React.FC<CompanyModalProps> = ({
               required
               value={code}
               onChange={(e) => setCode(e.target.value.toUpperCase())}
-              placeholder="e.g. HB, PCAM, CB"
-              className="w-full px-3.5 py-2 sm:py-2.5 bg-white border border-slate-300 hover:border-slate-400 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/15 rounded-xl text-slate-900 text-xs sm:text-sm font-semibold outline-none transition placeholder:text-slate-400 placeholder:font-normal"
+              placeholder={lang === 'km' ? 'ឧ. HB, PCAM, CB' : 'e.g. HB, PCAM, CB'}
+              className={`w-full px-3.5 py-2 sm:py-2.5 border rounded-xl text-xs sm:text-sm outline-none transition
+                ${code
+                  ? 'bg-white border-blue-500 font-bold text-slate-900'
+                  : 'bg-slate-50/70 border-slate-300 text-slate-900 placeholder:text-slate-400 placeholder:italic'
+                }
+                focus:border-blue-600 focus:ring-2 focus:ring-blue-500/15 focus:bg-white`}
             />
           </div>
 
@@ -214,8 +243,13 @@ export const CompanyModal: React.FC<CompanyModalProps> = ({
               required
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="e.g. Hanuman Beverages Co., Ltd."
-              className="w-full px-3.5 py-2 sm:py-2.5 bg-white border border-slate-300 hover:border-slate-400 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/15 rounded-xl text-slate-900 text-xs sm:text-sm font-semibold outline-none transition placeholder:text-slate-400 placeholder:font-normal"
+              placeholder={lang === 'km' ? 'ឧ. Hanuman Beverages Co., Ltd.' : 'e.g. Hanuman Beverages Co., Ltd.'}
+              className={`w-full px-3.5 py-2 sm:py-2.5 border rounded-xl text-xs sm:text-sm outline-none transition
+                ${name
+                  ? 'bg-white border-blue-500 font-bold text-slate-900'
+                  : 'bg-slate-50/70 border-slate-300 text-slate-900 placeholder:text-slate-400 placeholder:italic'
+                }
+                focus:border-blue-600 focus:ring-2 focus:ring-blue-500/15 focus:bg-white`}
             />
           </div>
 
@@ -228,8 +262,13 @@ export const CompanyModal: React.FC<CompanyModalProps> = ({
               rows={2}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="e.g. Warehouse 1, Phnom Penh"
-              className="w-full px-3.5 py-2 sm:py-2.5 bg-white border border-slate-300 hover:border-slate-400 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/15 rounded-xl text-slate-900 text-xs sm:text-sm font-medium outline-none transition placeholder:text-slate-400 placeholder:font-normal"
+              placeholder={lang === 'km' ? 'ឧ. ឃ្លាំងទី១ ភ្នំពេញ' : 'e.g. Warehouse 1, Phnom Penh'}
+              className={`w-full px-3.5 py-2 sm:py-2.5 border rounded-xl text-xs sm:text-sm outline-none transition
+                ${description
+                  ? 'bg-white border-blue-500 font-medium text-slate-900'
+                  : 'bg-slate-50/70 border-slate-300 text-slate-900 placeholder:text-slate-400 placeholder:italic'
+                }
+                focus:border-blue-600 focus:ring-2 focus:ring-blue-500/15 focus:bg-white`}
             />
           </div>
 

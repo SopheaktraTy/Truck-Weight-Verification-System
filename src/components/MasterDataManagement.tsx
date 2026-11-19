@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { Company, Product } from '../types';
-import { Building2, Package, Plus, Trash2, Image as ImageIcon } from 'lucide-react';
+import { Building2, Package, Plus, Trash2, Image as ImageIcon, Edit2 } from 'lucide-react';
 import { CompanyModal } from './CompanyModal';
 import { ProductModal } from './ProductModal';
+import { useAuth } from '../context/AuthContext';
 
 interface MasterDataManagementProps {
   companies: Company[];
@@ -23,9 +24,12 @@ export const MasterDataManagement: React.FC<MasterDataManagementProps> = ({
   onDeleteProduct,
   lang,
 }) => {
+  const { isAdmin } = useAuth();
   const [selectedCompanyId, setSelectedCompanyId] = useState<string>(companies[0]?.id || '');
   const [isCompanyModalOpen, setIsCompanyModalOpen] = useState(false);
+  const [editingCompany, setEditingCompany] = useState<Company | null>(null);
   const [isProductModalOpen, setIsProductModalOpen] = useState(false);
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
 
   const selectedCompany = companies.find((c) => c.id === selectedCompanyId) || companies[0];
   const companyProducts = products.filter((p) => p.company_id === selectedCompany?.id);
@@ -38,22 +42,27 @@ export const MasterDataManagement: React.FC<MasterDataManagementProps> = ({
             {lang === 'km' ? 'គ្រប់គ្រងក្រុមហ៊ុន និងមុខទំនិញ' : 'Company & Product Management'}
           </h2>
           <p className="text-xs text-slate-500">
-            {lang === 'km' 
-              ? 'បង្កើតក្រុមហ៊ុន ផ្ទុករូបសញ្ញា (Logo) និងបន្ថែមមុខទំនិញជាមួយរូបភាព' 
+            {lang === 'km'
+              ? 'បង្កើតក្រុមហ៊ុន ផ្ទុករូបសញ្ញា (Logo) និងបន្ថែមមុខទំនិញជាមួយរូបភាព'
               : 'Add companies with custom logos and products with photos'}
           </p>
         </div>
 
-        <div className="flex items-center space-x-2">
-          <button
-            type="button"
-            onClick={() => setIsCompanyModalOpen(true)}
-            className="inline-flex items-center space-x-1.5 px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs sm:text-sm font-bold shadow-md shadow-blue-500/20 transition"
-          >
-            <Plus className="w-4 h-4 stroke-[3]" />
-            <span>{lang === 'km' ? 'បន្ថែមក្រុមហ៊ុន' : 'Add Company'}</span>
-          </button>
-        </div>
+        {isAdmin && (
+          <div className="flex items-center space-x-2">
+            <button
+              type="button"
+              onClick={() => {
+                setEditingCompany(null);
+                setIsCompanyModalOpen(true);
+              }}
+              className="inline-flex items-center space-x-1.5 px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs sm:text-sm font-bold shadow-md shadow-blue-500/20 transition"
+            >
+              <Plus className="w-4 h-4 stroke-[3]" />
+              <span>{lang === 'km' ? 'បន្ថែមក្រុមហ៊ុន' : 'Add Company'}</span>
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Main 2-Column Layout */}
@@ -86,23 +95,15 @@ export const MasterDataManagement: React.FC<MasterDataManagementProps> = ({
                   <div className="flex items-center space-x-3 min-w-0">
                     <div className="w-12 h-12 rounded-xl bg-slate-100 border border-slate-200 overflow-hidden flex-shrink-0 flex items-center justify-center">
                       {c.logo_url ? (
-                        <img
-                          src={c.logo_url}
-                          alt={c.name}
-                          className="w-full h-full object-cover"
-                        />
+                        <img src={c.logo_url} alt={c.name} className="w-full h-full object-cover" />
                       ) : (
                         <Building2 className="w-6 h-6 text-slate-400" />
                       )}
                     </div>
                     <div className="min-w-0">
                       <div className="flex items-center space-x-1.5">
-                        <span className="font-bold text-slate-900 text-sm">
-                          {c.code}
-                        </span>
-                        <span className="text-xs text-slate-500 font-medium truncate">
-                          {c.name}
-                        </span>
+                        <span className="font-bold text-slate-900 text-sm">{c.code}</span>
+                        <span className="text-xs text-slate-500 font-medium truncate">{c.name}</span>
                       </div>
                       <span className="text-[11px] text-blue-600 font-semibold block mt-0.5">
                         {count} {lang === 'km' ? 'មុខទំនិញ' : 'products'}
@@ -110,20 +111,36 @@ export const MasterDataManagement: React.FC<MasterDataManagementProps> = ({
                     </div>
                   </div>
 
-                  {companies.length > 1 && (
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        if (confirm(`Delete company ${c.name}?`)) {
-                          onDeleteCompany(c.id);
-                        }
-                      }}
-                      className="p-1.5 text-slate-300 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
-                      title="Delete company"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
+                  {isAdmin && (
+                    <div className="flex items-center space-x-1 shrink-0">
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setEditingCompany(c);
+                          setIsCompanyModalOpen(true);
+                        }}
+                        className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition"
+                        title={lang === 'km' ? 'កែប្រែក្រុមហ៊ុន' : 'Edit company'}
+                      >
+                        <Edit2 className="w-3.5 h-3.5" />
+                      </button>
+                      {companies.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (confirm(`Delete company ${c.name}?`)) {
+                              onDeleteCompany(c.id);
+                            }
+                          }}
+                          className="p-1.5 text-slate-300 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
+                          title="Delete company"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      )}
+                    </div>
                   )}
                 </div>
               );
@@ -137,11 +154,7 @@ export const MasterDataManagement: React.FC<MasterDataManagementProps> = ({
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 rounded-xl bg-slate-100 border border-slate-200 overflow-hidden flex items-center justify-center">
                 {selectedCompany?.logo_url ? (
-                  <img
-                    src={selectedCompany.logo_url}
-                    alt={selectedCompany.name}
-                    className="w-full h-full object-cover"
-                  />
+                  <img src={selectedCompany.logo_url} alt={selectedCompany.name} className="w-full h-full object-cover" />
                 ) : (
                   <Building2 className="w-5 h-5 text-slate-400" />
                 )}
@@ -157,14 +170,19 @@ export const MasterDataManagement: React.FC<MasterDataManagementProps> = ({
               </div>
             </div>
 
-            <button
-              type="button"
-              onClick={() => setIsProductModalOpen(true)}
-              className="inline-flex items-center space-x-1.5 px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 rounded-xl text-xs sm:text-sm font-semibold transition self-start sm:self-auto"
-            >
-              <Plus className="w-4 h-4 stroke-[2.5]" />
-              <span>{lang === 'km' ? 'បន្ថែមមុខទំនិញថ្មី' : 'Add New Product'}</span>
-            </button>
+            {isAdmin && (
+              <button
+                type="button"
+                onClick={() => {
+                  setEditingProduct(null);
+                  setIsProductModalOpen(true);
+                }}
+                className="inline-flex items-center space-x-1.5 px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 rounded-xl text-xs sm:text-sm font-semibold transition self-start sm:self-auto"
+              >
+                <Plus className="w-4 h-4 stroke-[2.5]" />
+                <span>{lang === 'km' ? 'បន្ថែមមុខទំនិញថ្មី' : 'Add New Product'}</span>
+              </button>
+            )}
           </div>
 
           {/* Products Grid / Cards */}
@@ -174,13 +192,18 @@ export const MasterDataManagement: React.FC<MasterDataManagementProps> = ({
               <p className="text-sm font-medium">
                 {lang === 'km' ? 'មិនទាន់មានមុខទំនិញសម្រាប់ក្រុមហ៊ុននេះនៅឡើយទេ' : 'No products found for this company.'}
               </p>
-              <button
-                type="button"
-                onClick={() => setIsProductModalOpen(true)}
-                className="mt-3 text-xs font-bold text-blue-600 hover:underline"
-              >
-                + {lang === 'km' ? 'បន្ថែមមុខទំនិញឥឡូវនេះ' : 'Add product now'}
-              </button>
+              {isAdmin && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEditingProduct(null);
+                    setIsProductModalOpen(true);
+                  }}
+                  className="mt-3 text-xs font-bold text-blue-600 hover:underline"
+                >
+                  + {lang === 'km' ? 'បន្ថែមមុខទំនិញឥឡូវនេះ' : 'Add product now'}
+                </button>
+              )}
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
@@ -217,19 +240,34 @@ export const MasterDataManagement: React.FC<MasterDataManagementProps> = ({
                     </div>
                   </div>
 
-                  {/* Delete button */}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (confirm(`Delete product ${p.name_en}?`)) {
-                        onDeleteProduct(p.id);
-                      }
-                    }}
-                    className="p-1.5 text-slate-300 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
-                    title="Delete product"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
+                  {/* Admin Action Buttons */}
+                  {isAdmin && (
+                    <div className="flex flex-col space-y-1 shrink-0">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setEditingProduct(p);
+                          setIsProductModalOpen(true);
+                        }}
+                        className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition"
+                        title={lang === 'km' ? 'កែប្រែមុខទំនិញ' : 'Edit product'}
+                      >
+                        <Edit2 className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (confirm(`Delete product ${p.name_en}?`)) {
+                            onDeleteProduct(p.id);
+                          }
+                        }}
+                        className="p-1.5 text-slate-300 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
+                        title="Delete product"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
@@ -240,16 +278,24 @@ export const MasterDataManagement: React.FC<MasterDataManagementProps> = ({
       {/* Modals */}
       <CompanyModal
         isOpen={isCompanyModalOpen}
-        onClose={() => setIsCompanyModalOpen(false)}
+        onClose={() => {
+          setIsCompanyModalOpen(false);
+          setEditingCompany(null);
+        }}
         onSave={onAddCompany}
+        initialCompany={editingCompany}
         lang={lang}
       />
 
       <ProductModal
         isOpen={isProductModalOpen}
-        onClose={() => setIsProductModalOpen(false)}
+        onClose={() => {
+          setIsProductModalOpen(false);
+          setEditingProduct(null);
+        }}
         onSave={onAddProduct}
         company={selectedCompany}
+        initialProduct={editingProduct}
         lang={lang}
       />
     </div>

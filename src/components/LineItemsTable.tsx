@@ -13,6 +13,7 @@ interface LineItemsTableProps {
   onAddNewProduct?: () => void;
   onEditProduct?: (product: Product) => void;
   totalWarehouseKg: number;
+  isAdmin?: boolean;
   lang: 'km' | 'en';
 }
 
@@ -26,6 +27,7 @@ export const LineItemsTable: React.FC<LineItemsTableProps> = ({
   onAddNewProduct,
   onEditProduct,
   totalWarehouseKg,
+  isAdmin = false,
   lang,
 }) => {
   return (
@@ -52,8 +54,8 @@ export const LineItemsTable: React.FC<LineItemsTableProps> = ({
             {totalWarehouseKg.toLocaleString(undefined, { maximumFractionDigits: 1 })} Kg
           </div>
 
-          {/* Product Management Definition Button */}
-          {onAddNewProduct && (
+          {/* Product Management Definition Button: Only visible to logged-in Admin */}
+          {isAdmin && onAddNewProduct && (
             <button
               type="button"
               onClick={onAddNewProduct}
@@ -156,8 +158,13 @@ export const LineItemsTable: React.FC<LineItemsTableProps> = ({
                     step="any"
                     value={item.quantity === 0 ? '' : item.quantity}
                     onChange={(e) => onQuantityChange(item.id, parseFloat(e.target.value) || 0)}
-                    placeholder="0"
-                    className="w-full text-center py-2 px-3 bg-white border border-slate-300 hover:border-slate-400 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/15 rounded-xl font-semibold text-slate-900 outline-none transition shadow-2xs placeholder:text-slate-400 placeholder:font-normal text-xs sm:text-sm"
+                    placeholder={lang === 'km' ? 'ចំនួន...' : 'Qty...'}
+                    className={`w-full text-center py-2 px-3 border rounded-xl outline-none transition shadow-2xs text-xs sm:text-sm
+                      ${item.quantity > 0
+                        ? 'bg-blue-50/40 border-blue-500 font-black text-slate-900 ring-2 ring-blue-500/15'
+                        : 'bg-blue-50/40 border-blue-200/90 hover:border-blue-400 text-slate-900 font-semibold placeholder:text-slate-400'
+                      }
+                      focus:bg-white focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20`}
                   />
                 </div>
                 <div>
@@ -278,8 +285,13 @@ export const LineItemsTable: React.FC<LineItemsTableProps> = ({
                         step="any"
                         value={item.quantity === 0 ? '' : item.quantity}
                         onChange={(e) => onQuantityChange(item.id, parseFloat(e.target.value) || 0)}
-                        placeholder="0"
-                        className="w-24 text-center py-2 px-3 bg-white border border-slate-300 hover:border-slate-400 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/15 rounded-xl font-semibold text-slate-900 outline-none transition shadow-2xs placeholder:text-slate-400 placeholder:font-normal text-xs sm:text-sm"
+                        placeholder={lang === 'km' ? 'ចំនួន...' : 'Qty...'}
+                        className={`w-28 text-center py-2 px-3 border rounded-xl outline-none transition shadow-2xs text-xs sm:text-sm
+                          ${item.quantity > 0
+                            ? 'bg-blue-50/40 border-blue-500 font-black text-slate-900 ring-2 ring-blue-500/15'
+                            : 'bg-blue-50/40 border-blue-200/90 hover:border-blue-400 text-slate-900 font-semibold placeholder:text-slate-400'
+                          }
+                          focus:bg-white focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20`}
                       />
                     </td>
 

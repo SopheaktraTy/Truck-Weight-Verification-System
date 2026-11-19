@@ -1,3 +1,15 @@
+export type UserRole = 'admin' | 'operator' | 'viewer';
+
+export interface UserProfile {
+  id: string;
+  email?: string;
+  full_name?: string;
+  avatar_url?: string;
+  role: UserRole;
+  created_at?: string;
+  updated_at?: string;
+}
+
 export interface Company {
   id: string;
   code: 'HB' | 'PCAM' | string;
@@ -40,24 +52,38 @@ export interface TruckRecord {
   company_name?: string;
   company_logo?: string;
   record_date: string;
+  record_time?: string;
   scale_in_kg: number;
   scale_out_kg: number;
   scale_net_kg: number;
   warehouse_total_kg: number;
   diff_kg: number;
   diff_percent: number;
+  tolerance_percent?: number;
   status: 'អនុញ្ញាត' | 'ត្រួតពិនិត្យ';
   status_message: string;
+  operator_id?: string;
   operator_name?: string;
+  driver_name?: string;
   notes?: string;
   created_at?: string;
+  updated_at?: string;
+  updated_by?: string;
+  approval_status?: 'pending' | 'approved' | 'rejected';
+  approved_at?: string;
+  approved_by?: string;
   items?: TruckRecordItem[];
 }
 
 export interface TruckRecordItem {
   id?: string;
   record_id?: string;
-  product_id: string;
+  product_id?: string;
+  product_name_kh?: string;
+  product_name_en?: string;
+  packaging_spec?: string;
+  unit?: string;
+  image_url?: string;
   quantity: number;
   unit_weight_kg: number;
   total_weight_kg: number;

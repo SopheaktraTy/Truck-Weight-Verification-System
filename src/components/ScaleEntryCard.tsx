@@ -1,5 +1,5 @@
 import React from 'react';
-import { Scale, ArrowDownRight, ArrowUpRight } from 'lucide-react';
+import { Scale, ArrowDownRight, ArrowUpRight, CheckCircle2, PenLine } from 'lucide-react';
 
 interface ScaleEntryCardProps {
   scaleInKg: number;
@@ -27,15 +27,27 @@ export const ScaleEntryCard: React.FC<ScaleEntryCardProps> = ({
         </h2>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-3">
         {/* Scale In (Tare / Inbound) */}
         <div>
-          <label className="flex items-center justify-between text-xs font-semibold text-slate-600 mb-1.5">
+          <label className="flex items-center justify-between text-xs font-bold text-slate-700 mb-1.5">
             <span className="flex items-center space-x-1.5">
               <ArrowDownRight className="w-4 h-4 text-emerald-600" />
               <span>{lang === 'km' ? 'ទម្ងន់ឡាន (ចូល)' : 'Scale Inbound (Tare)'}</span>
             </span>
-            <span className="text-slate-400 font-normal">Kg</span>
+            <div className="flex items-center space-x-1.5">
+              {scaleInKg > 0 ? (
+                <span className="text-[10px] text-blue-700 bg-blue-100 px-2 py-0.5 rounded-md font-bold flex items-center space-x-0.5 shadow-2xs">
+                  <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                  <span>{lang === 'km' ? 'បានបញ្ចូល' : 'Filled'}</span>
+                </span>
+              ) : (
+                <span className="text-[10px] text-blue-700 bg-blue-50 border border-blue-200 px-2 py-0.5 rounded-md font-bold">
+                  {lang === 'km' ? 'ត្រូវបញ្ចូល (Fill)' : 'Enter Weight'}
+                </span>
+              )}
+              <span className="text-slate-400 font-normal">Kg</span>
+            </div>
           </label>
           <input
             type="number"
@@ -44,19 +56,36 @@ export const ScaleEntryCard: React.FC<ScaleEntryCardProps> = ({
             step="any"
             value={scaleInKg === 0 ? '' : scaleInKg}
             onChange={(e) => setScaleInKg(parseFloat(e.target.value) || 0)}
-            placeholder="0"
-            className="w-full px-3.5 py-2 sm:py-2.5 bg-white border border-slate-300 hover:border-slate-400 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/15 rounded-xl font-bold text-base sm:text-lg text-slate-900 outline-none transition shadow-2xs placeholder:text-slate-400 placeholder:font-normal"
+            placeholder={lang === 'km' ? 'ឧ. 12500' : 'e.g. 12500'}
+            className={`w-full px-3 py-1.5 border rounded-xl text-sm outline-none transition shadow-2xs
+              ${scaleInKg > 0
+                ? 'bg-blue-50/40 border-blue-500 font-black text-slate-900 ring-2 ring-blue-500/15'
+                : 'bg-blue-50/40 border-blue-200/90 hover:border-blue-400 text-slate-900 font-semibold placeholder:text-slate-400 placeholder:font-normal'
+              }
+              focus:bg-white focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20`}
           />
         </div>
 
         {/* Scale Out (Gross / Outbound) */}
         <div>
-          <label className="flex items-center justify-between text-xs font-semibold text-slate-600 mb-1.5">
+          <label className="flex items-center justify-between text-xs font-bold text-slate-700 mb-1.5">
             <span className="flex items-center space-x-1.5">
               <ArrowUpRight className="w-4 h-4 text-blue-600" />
               <span>{lang === 'km' ? 'ទម្ងន់ឡាន (ចេញ)' : 'Scale Outbound (Gross)'}</span>
             </span>
-            <span className="text-slate-400 font-normal">Kg</span>
+            <div className="flex items-center space-x-1.5">
+              {scaleOutKg > 0 ? (
+                <span className="text-[10px] text-blue-700 bg-blue-100 px-2 py-0.5 rounded-md font-bold flex items-center space-x-0.5 shadow-2xs">
+                  <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                  <span>{lang === 'km' ? 'បានបញ្ចូល' : 'Filled'}</span>
+                </span>
+              ) : (
+                <span className="text-[10px] text-blue-700 bg-blue-50 border border-blue-200 px-2 py-0.5 rounded-md font-bold">
+                  {lang === 'km' ? 'ត្រូវបញ្ចូល (Fill)' : 'Enter Weight'}
+                </span>
+              )}
+              <span className="text-slate-400 font-normal">Kg</span>
+            </div>
           </label>
           <input
             type="number"
@@ -65,8 +94,13 @@ export const ScaleEntryCard: React.FC<ScaleEntryCardProps> = ({
             step="any"
             value={scaleOutKg === 0 ? '' : scaleOutKg}
             onChange={(e) => setScaleOutKg(parseFloat(e.target.value) || 0)}
-            placeholder="0"
-            className="w-full px-3.5 py-2 sm:py-2.5 bg-white border border-slate-300 hover:border-slate-400 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/15 rounded-xl font-bold text-base sm:text-lg text-slate-900 outline-none transition shadow-2xs placeholder:text-slate-400 placeholder:font-normal"
+            placeholder={lang === 'km' ? 'ឧ. 29630' : 'e.g. 29630'}
+            className={`w-full px-3 py-1.5 border rounded-xl text-sm outline-none transition shadow-2xs
+              ${scaleOutKg > 0
+                ? 'bg-blue-50/40 border-blue-500 font-black text-slate-900 ring-2 ring-blue-500/15'
+                : 'bg-blue-50/40 border-blue-200/90 hover:border-blue-400 text-slate-900 font-semibold placeholder:text-slate-400 placeholder:font-normal'
+              }
+              focus:bg-white focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20`}
           />
         </div>
 

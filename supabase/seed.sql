@@ -6,8 +6,8 @@
 -- 1. Insert Companies
 INSERT INTO public.companies (code, name, logo_url, description)
 VALUES 
-  ('HB', 'Hanuman Beverages', 'https://images.unsplash.com/photo-1543083477-4f785aeafaa9?w=300&auto=format&fit=crop&q=80', 'Hanuman Beverages Co., Ltd.'),
-  ('PCAM', 'PCAM Trading', 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=300&auto=format&fit=crop&q=80', 'PCAM Trading International')
+  ('HB', 'Hanuman Beverages', '', 'Hanuman Beverages Co., Ltd.'),
+  ('PCAM', 'PCAM Trading', '', 'PCAM Trading International')
 ON CONFLICT (code) DO UPDATE 
 SET name = EXCLUDED.name,
     logo_url = EXCLUDED.logo_url;
