@@ -85,8 +85,16 @@ export const Header: React.FC<HeaderProps> = ({
               </div>
             </div>
 
-            {/* Mobile: avatar or login */}
+            {/* Mobile: flag first then login / avatar */}
             <div className="flex items-center space-x-2 md:hidden">
+              <button
+                onClick={() => setLang(lang === 'km' ? 'en' : 'km')}
+                className="flex items-center justify-center p-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 transition shadow-2xs"
+                title={lang === 'km' ? 'ប្តូរភាសា' : 'Switch Language'}
+              >
+                {lang === 'km' ? <CambodiaFlag className="w-[18px] h-[12px]" /> : <USFlag className="w-[18px] h-[12px]" />}
+              </button>
+
               {!user ? (
                 <button
                   type="button"
@@ -113,12 +121,6 @@ export const Header: React.FC<HeaderProps> = ({
                   {dropdownOpen && <AvatarDropdown name={displayName} email={user.email || ''} roleLabel={roleLabel} roleBadgeClass={roleBadgeClass} isAdmin={isAdmin} onSignOut={() => { signOut(); setDropdownOpen(false); }} lang={lang} />}
                 </div>
               )}
-              <button
-                onClick={() => setLang(lang === 'km' ? 'en' : 'km')}
-                className="flex items-center justify-center p-1 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 transition shadow-2xs"
-              >
-                {lang === 'km' ? <CambodiaFlag className="w-[16px] h-[11px]" /> : <USFlag className="w-[16px] h-[11px]" />}
-              </button>
             </div>
           </div>
 

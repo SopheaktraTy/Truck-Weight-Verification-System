@@ -283,8 +283,8 @@ export const ReportTable: React.FC<ReportTableProps> = ({
                 >
                   {/* Header */}
                   <div className="flex items-start justify-between gap-3">
-                    <div className="flex items-center space-x-3 min-w-0 flex-1">
-                      <div className="w-14 h-14 rounded-2xl bg-white border border-slate-200/90 p-1 flex items-center justify-center shrink-0 shadow-2xs overflow-hidden">
+                    <div className="flex items-center space-x-2.5 min-w-0 flex-1">
+                      <div className="w-11 h-11 rounded-xl bg-white border border-slate-200/90 p-0.5 flex items-center justify-center shrink-0 shadow-2xs overflow-hidden">
                         {comp.logo ? (
                           <img src={comp.logo} alt={comp.name} className="w-full h-full object-contain rounded-xl" />
                         ) : (
@@ -295,32 +295,30 @@ export const ReportTable: React.FC<ReportTableProps> = ({
                       </div>
 
                       <div className="min-w-0 flex-1">
-                        <div className="flex items-center space-x-1.5 flex-wrap gap-y-1">
-                          <span className="font-bold text-slate-900 text-sm leading-tight truncate">
-                            {comp.name || comp.code}
+                        {/* 1. Company Name */}
+                        <div className="font-bold text-slate-900 text-sm leading-tight truncate">
+                          {comp.name || comp.code}
+                        </div>
+
+                        {/* 2. Plate + Company Code in ONE clean line */}
+                        <div className="flex items-center gap-1.5 mt-1">
+                          <span className="font-bold text-white font-mono bg-slate-900 px-2 py-0.5 rounded-md text-xs shadow-2xs shrink-0">
+                            {r.plate_number}
                           </span>
                           <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-slate-100 text-slate-600 border border-slate-200 shrink-0">
                             {comp.code}
                           </span>
-                          <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-slate-100 text-slate-600 border border-slate-200 shrink-0">
-                            ±{(r.tolerance_percent ?? 0.40).toFixed(1)}%
-                          </span>
                         </div>
 
-                        <div className="flex items-center space-x-2 text-xs text-slate-500 mt-1.5">
-                          <span className="font-bold text-white font-mono bg-slate-900 px-2 py-0.5 rounded-md text-xs shadow-2xs">
-                            {r.plate_number}
-                          </span>
-                          <span>•</span>
-                          <span className="text-slate-700 font-semibold text-xs">
-                            {formatRecordDateTime(r.record_date, r.record_time, r.created_at)}
-                          </span>
+                        {/* 3. Clean Date & Time */}
+                        <div className="text-[11px] text-slate-500 font-medium mt-1">
+                          {formatRecordDateTime(r.record_date, r.record_time, r.created_at)}
                         </div>
                       </div>
                     </div>
 
                     <span
-                      className={`inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-full text-xs font-bold shrink-0 border shadow-2xs ${
+                      className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-bold shrink-0 border shadow-2xs ${
                         isApproved
                           ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
                           : 'bg-rose-50 text-rose-700 border-rose-200'
@@ -370,32 +368,36 @@ export const ReportTable: React.FC<ReportTableProps> = ({
                       </span>
                     </div>
 
-                    {isAdmin && (
-                      <div
-                        className="flex items-center space-x-1.5"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        {onEditRecord && (
-                          <button
-                            onClick={() => onEditRecord(r)}
-                            className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition"
-                            title="Admin Edit"
-                          >
-                            <Edit2 className="w-4 h-4" />
-                          </button>
-                        )}
+                    <div className="flex items-center space-x-2" onClick={(e) => e.stopPropagation()}>
+                      {/* Tolerance Badge moved to bottom right */}
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 border border-slate-200 shrink-0">
+                        ±{(r.tolerance_percent ?? 0.40).toFixed(1)}%
+                      </span>
 
-                        {onDeleteRecord && (
-                          <button
-                            onClick={() => setRecordToDelete(r)}
-                            className="p-1.5 text-rose-600 hover:bg-rose-50 rounded-lg transition"
-                            title="Admin Delete"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        )}
-                      </div>
-                    )}
+                      {isAdmin && (
+                        <div className="flex items-center space-x-1 border-l border-slate-200 pl-1.5">
+                          {onEditRecord && (
+                            <button
+                              onClick={() => onEditRecord(r)}
+                              className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition"
+                              title="Admin Edit"
+                            >
+                              <Edit2 className="w-4 h-4" />
+                            </button>
+                          )}
+
+                          {onDeleteRecord && (
+                            <button
+                              onClick={() => setRecordToDelete(r)}
+                              className="p-1.5 text-rose-600 hover:bg-rose-50 rounded-lg transition"
+                              title="Admin Delete"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          )}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               );

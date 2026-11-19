@@ -49,14 +49,14 @@ export const VerificationBadge: React.FC<VerificationBadgeProps> = ({
   return (
     <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex flex-col justify-between">
       <div>
-        {/* Header & Compact Manual Tolerance Stepper */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-2.5 mb-2.5 border-b border-slate-100 gap-2">
-          <h2 className="text-sm font-bold text-slate-800 uppercase tracking-wide">
+        {/* Header & Compact Manual Tolerance Stepper — always one row on all screens */}
+        <div className="flex flex-row items-center justify-between pb-2.5 mb-2.5 border-b border-slate-100 gap-2">
+          <h2 className="text-xs sm:text-sm font-bold text-slate-800 uppercase tracking-wide leading-tight">
             {lang === 'km' ? 'លទ្ធផលនៃការផ្ទៀងផ្ទាត់' : 'Weight Verification Result'}
           </h2>
 
           {/* Short, compact manual tolerance input with icon reset */}
-          <div className="inline-flex items-center space-x-1 bg-blue-50/50 border border-blue-200/90 px-2 py-0.5 rounded-lg shadow-2xs self-start sm:self-auto">
+          <div className="inline-flex items-center space-x-1 bg-blue-50/50 border border-blue-200/90 px-2 py-0.5 rounded-lg shadow-2xs shrink-0">
             <Sliders className="w-3.5 h-3.5 text-blue-600 shrink-0" />
             <span className="text-[11px] font-bold text-slate-600 whitespace-nowrap">
               {lang === 'km' ? 'លំអៀង:' : 'Tol:'}

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Truck, Calendar, User } from 'lucide-react';
+import { Truck, User } from 'lucide-react';
 
 interface TruckInfoFormProps {
   plateNumber: string;
@@ -24,26 +24,6 @@ export const TruckInfoForm: React.FC<TruckInfoFormProps> = ({
   setOperatorName,
   lang,
 }) => {
-  // Construct ISO-like string YYYY-MM-DDTHH:mm for native datetime-local input
-  const dateTimeValue =
-    recordDate && recordTime
-      ? `${recordDate}T${recordTime.slice(0, 5)}`
-      : recordDate
-      ? `${recordDate}T00:00`
-      : '';
-
-  const handleDateTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = e.target.value;
-    if (!val) {
-      setRecordDate('');
-      setRecordTime?.('');
-      return;
-    }
-    const [datePart, timePart] = val.split('T');
-    if (datePart) setRecordDate(datePart);
-    if (timePart) setRecordTime?.(timePart.slice(0, 5));
-  };
-
   const handleSetCurrentDateTime = () => {
     const now = new Date();
     const d = now.toISOString().slice(0, 10);
@@ -82,7 +62,7 @@ export const TruckInfoForm: React.FC<TruckInfoFormProps> = ({
           </div>
         </div>
 
-        {/* 2. Merged Date & Time (Unified Native DateTime-Local Control) */}
+        {/* 2. Date & Time — split inputs for iOS Safari compatibility, no extra icon */}
         <div className="sm:col-span-5">
           <div className="flex items-center justify-between mb-1.5">
             <label className="block text-xs font-bold text-slate-700">
@@ -97,22 +77,30 @@ export const TruckInfoForm: React.FC<TruckInfoFormProps> = ({
               {lang === 'km' ? 'ឥឡូវនេះ (Now)' : 'Now'}
             </button>
           </div>
-          <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-blue-600 z-10">
-              <Calendar className="w-4 h-4" />
-            </div>
+          <div className="flex gap-2">
+            {/* Date input — iOS renders this correctly as a date picker */}
             <input
-              type="datetime-local"
-              value={dateTimeValue}
-              onChange={handleDateTimeChange}
+              type="date"
+              value={recordDate}
+              onChange={(e) => setRecordDate(e.target.value)}
               onClick={(e) => {
                 try {
                   (e.currentTarget as any).showPicker?.();
-                } catch {
-                  // Fallback for older browsers
-                }
+                } catch {}
               }}
-              className="w-full pl-10 pr-3.5 py-2.5 bg-blue-50/40 border border-blue-200/90 hover:border-blue-400 focus:bg-white focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20 rounded-xl text-xs sm:text-sm font-semibold text-slate-900 outline-none transition shadow-2xs cursor-pointer min-h-[42px]"
+              className="flex-1 min-w-0 px-3 py-2.5 bg-blue-50/40 border border-blue-200/90 hover:border-blue-400 focus:bg-white focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20 rounded-xl text-xs sm:text-sm font-semibold text-slate-900 outline-none transition shadow-2xs min-h-[42px] cursor-pointer"
+            />
+            {/* Time input — hidden webkit clock icon per user request, clean & spacious */}
+            <input
+              type="time"
+              value={recordTime?.slice(0, 5) ?? ''}
+              onChange={(e) => setRecordTime?.(e.target.value)}
+              onClick={(e) => {
+                try {
+                  (e.currentTarget as any).showPicker?.();
+                } catch {}
+              }}
+              className="w-28 sm:w-32 shrink-0 px-2.5 py-2.5 bg-blue-50/40 border border-blue-200/90 hover:border-blue-400 focus:bg-white focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20 rounded-xl text-xs sm:text-sm font-bold text-slate-900 outline-none transition shadow-2xs min-h-[42px] cursor-pointer text-center [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
             />
           </div>
         </div>

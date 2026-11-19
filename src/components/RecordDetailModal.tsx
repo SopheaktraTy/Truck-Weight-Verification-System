@@ -35,30 +35,30 @@ export const RecordDetailModal: React.FC<RecordDetailModalProps> = ({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-150">
       <div className="bg-white rounded-3xl max-w-2xl w-full p-5 sm:p-6 shadow-2xl border border-slate-200 relative max-h-[90vh] flex flex-col">
         {/* Header */}
-        <div className="flex items-start justify-between pb-4 border-b border-slate-100 shrink-0">
-          <div className="flex items-center space-x-3">
+        <div className="flex items-start justify-between pb-3 sm:pb-4 border-b border-slate-100 shrink-0 gap-2">
+          <div className="flex items-center space-x-2.5 sm:space-x-3 min-w-0 flex-1">
             {/* Company Logo */}
-            <div className="w-12 h-12 rounded-2xl bg-white border border-slate-200/90 p-1 flex items-center justify-center shrink-0 shadow-2xs overflow-hidden">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-white border border-slate-200/90 p-0.5 sm:p-1 flex items-center justify-center shrink-0 shadow-2xs overflow-hidden">
               {comp?.logo_url || record.company_logo ? (
                 <img
                   src={comp?.logo_url || record.company_logo}
                   alt={comp?.name || record.company_code}
-                  className="w-full h-full object-contain rounded-xl"
+                  className="w-full h-full object-contain rounded-lg"
                 />
               ) : (
-                <div className="w-full h-full rounded-xl bg-blue-600 text-white flex items-center justify-center text-sm font-bold">
+                <div className="w-full h-full rounded-lg bg-blue-600 text-white flex items-center justify-center text-xs sm:text-sm font-bold">
                   {comp?.code || record.company_code || 'HB'}
                 </div>
               )}
             </div>
 
-            <div>
-              <div className="flex items-center space-x-2">
-                <span className="font-mono font-bold text-sm sm:text-base text-slate-900 bg-slate-100 px-2.5 py-0.5 rounded-lg border border-slate-200">
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+                <span className="font-mono font-bold text-xs sm:text-sm text-slate-900 bg-slate-100 px-2 py-0.5 rounded-lg border border-slate-200">
                   {record.plate_number}
                 </span>
                 <span
-                  className={`inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-xs font-bold ${
+                  className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold ${
                     isApproved
                       ? 'bg-emerald-100 text-emerald-800'
                       : 'bg-rose-100 text-rose-800'
@@ -72,17 +72,17 @@ export const RecordDetailModal: React.FC<RecordDetailModalProps> = ({
                   <span>{record.status}</span>
                 </span>
               </div>
-              <p className="text-xs text-slate-500 mt-1 flex items-center space-x-2">
-                <span>{comp?.name || record.company_name || comp?.code || 'Company'}</span>
+              <p className="text-[11px] sm:text-xs text-slate-500 mt-1 flex items-center gap-1.5 flex-wrap">
+                <span className="font-medium text-slate-800">{comp?.name || record.company_name || comp?.code || 'Company'}</span>
                 <span>•</span>
-                <span className="font-medium text-slate-700">{formattedDateTime}</span>
+                <span className="text-slate-600 font-medium">{formattedDateTime}</span>
               </p>
             </div>
           </div>
 
           <button
             onClick={onClose}
-            className="p-1.5 rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition"
+            className="p-1.5 rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition shrink-0"
           >
             <X className="w-5 h-5" />
           </button>
@@ -155,14 +155,14 @@ export const RecordDetailModal: React.FC<RecordDetailModalProps> = ({
             </div>
           </div>
 
-          {/* Retained Product Items Table */}
+          {/* Retained Product Items Section */}
           <div>
             <div className="flex items-center justify-between mb-2">
               <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wide flex items-center space-x-1.5">
                 <Package className="w-4 h-4 text-blue-600" />
-                <span>{lang === 'km' ? 'មុខទំនិញលម្អិត (Retained Products)' : 'Line Item Details'}</span>
+                <span>{lang === 'km' ? 'មុខទំនិញលម្អិត' : 'Line Item Details'}</span>
               </h4>
-              <span className="text-xs text-slate-500">
+              <span className="text-xs text-slate-500 font-medium">
                 {items.length} {lang === 'km' ? 'មុខទំនិញ' : 'items'}
               </span>
             </div>
@@ -172,84 +172,186 @@ export const RecordDetailModal: React.FC<RecordDetailModalProps> = ({
                 {lang === 'km' ? 'មិនមានទំនិញលម្អិតត្រូវបានកត់ត្រាទេ' : 'No line items recorded'}
               </div>
             ) : (
-              <div className="border border-slate-200 rounded-xl overflow-hidden shadow-2xs">
-                <table className="w-full text-xs text-left">
-                  <thead className="bg-slate-50 border-b border-slate-200 text-slate-600 font-semibold">
-                    <tr>
-                      <th className="py-2.5 px-3">#</th>
-                      <th className="py-2.5 px-3">{lang === 'km' ? 'ទំនិញ' : 'Product'}</th>
-                      <th className="py-2.5 px-3 text-right">{lang === 'km' ? 'ទម្ងន់/ឯកតា' : 'Unit Wt'}</th>
-                      <th className="py-2.5 px-3 text-right">{lang === 'km' ? 'ចំនួន' : 'Qty'}</th>
-                      <th className="py-2.5 px-3 text-right">{lang === 'km' ? 'សរុប (Kg)' : 'Total Kg'}</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100">
-                    {items.map((item, index) => {
-                      // Robust lookup from snapshot, joined relation, product_id, or unit weight fallback
-                      const itemUnitWeight = Number(item.unit_weight_kg) || 0;
-                      const matchedProd =
-                        item.product ||
-                        products.find((p) => p.id === item.product_id) ||
-                        products.find(
-                          (p) =>
-                            Math.abs(Number(p.unit_weight_kg) - itemUnitWeight) < 0.005 &&
-                            (!record.company_id || p.company_id === record.company_id || p.company_id === comp?.id)
-                        ) ||
-                        products.find(
-                          (p) => Math.abs(Number(p.unit_weight_kg) - itemUnitWeight) < 0.005
-                        );
-
-                      const nameKh = item.product_name_kh || matchedProd?.name_kh;
-                      const nameEn = item.product_name_en || matchedProd?.name_en;
-
-                      let displayName = '';
-                      if (nameKh && nameEn && nameKh !== nameEn) {
-                        displayName = lang === 'km' ? `${nameKh} (${nameEn})` : `${nameEn} (${nameKh})`;
-                      } else {
-                        displayName =
-                          (lang === 'km' ? (nameKh || nameEn) : (nameEn || nameKh)) ||
-                          matchedProd?.name_kh ||
-                          matchedProd?.name_en ||
-                          (lang === 'km' ? 'មុខទំនិញ' : 'Cargo Item');
-                      }
-
-                      const spec = item.packaging_spec || matchedProd?.packaging_spec || '';
-                      const unit = item.unit || matchedProd?.unit || 'កេស';
-                      const img = item.image_url || matchedProd?.image_url;
-
-                      return (
-                        <tr key={item.id || index} className="hover:bg-slate-50/80">
-                          <td className="py-2.5 px-3 text-slate-400 font-medium">{index + 1}</td>
-                          <td className="py-2.5 px-3">
-                            <div className="flex items-center space-x-2">
-                              {img && (
-                                <img
-                                  src={img}
-                                  alt={displayName}
-                                  className="w-7 h-7 rounded-lg object-cover border border-slate-200 shrink-0 shadow-2xs"
-                                />
-                              )}
-                              <div>
-                                <span className="font-bold text-slate-900 block">{displayName}</span>
-                                {spec && <span className="text-[10px] text-slate-500">{spec}</span>}
-                              </div>
-                            </div>
-                          </td>
-                          <td className="py-2.5 px-3 text-right font-medium text-slate-700">
-                            {Number(item.unit_weight_kg).toFixed(3)} Kg
-                          </td>
-                          <td className="py-2.5 px-3 text-right font-bold text-slate-900">
-                            {item.quantity.toLocaleString()} {unit}
-                          </td>
-                          <td className="py-2.5 px-3 text-right font-bold text-blue-700">
-                            {Number(item.total_weight_kg).toLocaleString(undefined, { minimumFractionDigits: 2 })} Kg
-                          </td>
-                        </tr>
+              <>
+                {/* Mobile View (< sm): Sleek Clean Product Cards */}
+                <div className="sm:hidden space-y-2.5">
+                  {items.map((item, index) => {
+                    const itemUnitWeight = Number(item.unit_weight_kg) || 0;
+                    const matchedProd =
+                      item.product ||
+                      products.find((p) => p.id === item.product_id) ||
+                      products.find(
+                        (p) =>
+                          Math.abs(Number(p.unit_weight_kg) - itemUnitWeight) < 0.005 &&
+                          (!record.company_id || p.company_id === record.company_id || p.company_id === comp?.id)
+                      ) ||
+                      products.find(
+                        (p) => Math.abs(Number(p.unit_weight_kg) - itemUnitWeight) < 0.005
                       );
-                    })}
-                  </tbody>
-                </table>
-              </div>
+
+                    const nameKh = item.product_name_kh || matchedProd?.name_kh;
+                    const nameEn = item.product_name_en || matchedProd?.name_en;
+
+                    let displayName = '';
+                    if (nameKh && nameEn && nameKh !== nameEn) {
+                      displayName = lang === 'km' ? `${nameKh} (${nameEn})` : `${nameEn} (${nameKh})`;
+                    } else {
+                      displayName =
+                        (lang === 'km' ? (nameKh || nameEn) : (nameEn || nameKh)) ||
+                        matchedProd?.name_kh ||
+                        matchedProd?.name_en ||
+                        (lang === 'km' ? 'មុខទំនិញ' : 'Cargo Item');
+                    }
+
+                    const spec = item.packaging_spec || matchedProd?.packaging_spec || '';
+                    const unit = item.unit || matchedProd?.unit || 'កេស';
+                    const img = item.image_url || matchedProd?.image_url;
+
+                    return (
+                      <div
+                        key={item.id || index}
+                        className="p-3 bg-slate-50/90 border border-slate-200 rounded-2xl space-y-2 shadow-2xs"
+                      >
+                        <div className="flex items-center space-x-2.5">
+                          <span className="w-5 h-5 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center text-[10px] font-bold shrink-0">
+                            {index + 1}
+                          </span>
+                          {img ? (
+                            <img
+                              src={img}
+                              alt={displayName}
+                              className="w-10 h-10 rounded-xl object-contain bg-white border border-slate-200 p-0.5 shrink-0 shadow-2xs"
+                            />
+                          ) : (
+                            <div className="w-10 h-10 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-xs shrink-0">
+                              <Package className="w-5 h-5" />
+                            </div>
+                          )}
+                          <div className="min-w-0 flex-1">
+                            <span className="font-bold text-xs text-slate-900 block leading-snug">
+                              {displayName}
+                            </span>
+                            {spec && (
+                              <span className="text-[10px] text-slate-500 font-medium block">
+                                {spec}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Metrics Bar */}
+                        <div className="grid grid-cols-3 gap-1 pt-2 border-t border-slate-200/70 text-center bg-white/70 rounded-xl p-2">
+                          <div className="border-r border-slate-200/70 pr-1">
+                            <span className="text-[10px] text-slate-400 block font-medium">
+                              {lang === 'km' ? 'ទម្ងន់/ឯកតា' : 'Unit Wt'}
+                            </span>
+                            <span className="text-xs font-semibold text-slate-800">
+                              {itemUnitWeight.toFixed(3)} <span className="text-[10px] font-normal text-slate-400">Kg</span>
+                            </span>
+                          </div>
+
+                          <div className="border-r border-slate-200/70 px-1">
+                            <span className="text-[10px] text-slate-400 block font-medium">
+                              {lang === 'km' ? 'ចំនួន' : 'Qty'}
+                            </span>
+                            <span className="text-xs font-bold text-slate-900">
+                              {item.quantity.toLocaleString()} <span className="text-[10px] font-normal text-slate-500">{unit}</span>
+                            </span>
+                          </div>
+
+                          <div className="pl-1">
+                            <span className="text-[10px] text-blue-600 block font-bold">
+                              {lang === 'km' ? 'សរុប (Kg)' : 'Total'}
+                            </span>
+                            <span className="text-xs font-black text-blue-700">
+                              {Number(item.total_weight_kg).toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Desktop View (>= sm): Full Data Table */}
+                <div className="hidden sm:block border border-slate-200 rounded-xl overflow-x-auto shadow-2xs">
+                  <table className="w-full text-xs text-left min-w-[500px]">
+                    <thead className="bg-slate-50 border-b border-slate-200 text-slate-600 font-semibold">
+                      <tr>
+                        <th className="py-2.5 px-3">#</th>
+                        <th className="py-2.5 px-3">{lang === 'km' ? 'ទំនិញ' : 'Product'}</th>
+                        <th className="py-2.5 px-3 text-right">{lang === 'km' ? 'ទម្ងន់/ឯកតា' : 'Unit Wt'}</th>
+                        <th className="py-2.5 px-3 text-right">{lang === 'km' ? 'ចំនួន' : 'Qty'}</th>
+                        <th className="py-2.5 px-3 text-right">{lang === 'km' ? 'សរុប (Kg)' : 'Total Kg'}</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100">
+                      {items.map((item, index) => {
+                        const itemUnitWeight = Number(item.unit_weight_kg) || 0;
+                        const matchedProd =
+                          item.product ||
+                          products.find((p) => p.id === item.product_id) ||
+                          products.find(
+                            (p) =>
+                              Math.abs(Number(p.unit_weight_kg) - itemUnitWeight) < 0.005 &&
+                              (!record.company_id || p.company_id === record.company_id || p.company_id === comp?.id)
+                          ) ||
+                          products.find(
+                            (p) => Math.abs(Number(p.unit_weight_kg) - itemUnitWeight) < 0.005
+                          );
+
+                        const nameKh = item.product_name_kh || matchedProd?.name_kh;
+                        const nameEn = item.product_name_en || matchedProd?.name_en;
+
+                        let displayName = '';
+                        if (nameKh && nameEn && nameKh !== nameEn) {
+                          displayName = lang === 'km' ? `${nameKh} (${nameEn})` : `${nameEn} (${nameKh})`;
+                        } else {
+                          displayName =
+                            (lang === 'km' ? (nameKh || nameEn) : (nameEn || nameKh)) ||
+                            matchedProd?.name_kh ||
+                            matchedProd?.name_en ||
+                            (lang === 'km' ? 'មុខទំនិញ' : 'Cargo Item');
+                        }
+
+                        const spec = item.packaging_spec || matchedProd?.packaging_spec || '';
+                        const unit = item.unit || matchedProd?.unit || 'កេស';
+                        const img = item.image_url || matchedProd?.image_url;
+
+                        return (
+                          <tr key={item.id || index} className="hover:bg-slate-50/80">
+                            <td className="py-2.5 px-3 text-slate-400 font-medium">{index + 1}</td>
+                            <td className="py-2.5 px-3">
+                              <div className="flex items-center space-x-2">
+                                {img && (
+                                  <img
+                                    src={img}
+                                    alt={displayName}
+                                    className="w-7 h-7 rounded-lg object-contain bg-white border border-slate-200 p-0.5 shrink-0 shadow-2xs"
+                                  />
+                                )}
+                                <div>
+                                  <span className="font-bold text-slate-900 block">{displayName}</span>
+                                  {spec && <span className="text-[10px] text-slate-500">{spec}</span>}
+                                </div>
+                              </div>
+                            </td>
+                            <td className="py-2.5 px-3 text-right font-medium text-slate-700">
+                              {itemUnitWeight.toFixed(3)} Kg
+                            </td>
+                            <td className="py-2.5 px-3 text-right font-bold text-slate-900">
+                              {item.quantity.toLocaleString()} {unit}
+                            </td>
+                            <td className="py-2.5 px-3 text-right font-bold text-blue-700">
+                              {Number(item.total_weight_kg).toLocaleString(undefined, { minimumFractionDigits: 2 })} Kg
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </>
             )}
           </div>
 
